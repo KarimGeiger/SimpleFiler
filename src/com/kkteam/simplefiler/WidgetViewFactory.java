@@ -17,27 +17,34 @@ package com.kkteam.simplefiler;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 public class WidgetViewFactory implements RemoteViewsService.RemoteViewsFactory {
-	private static final String[] items = { "lorem", "ipsum", "dolor", "sit", "amet", "consectetuer", "adipiscing", "elit", "morbi", "vel", "ligula",
-			"vitae", "arcu", "aliquet", "mollis", "etiam", "vel", "erat", "placerat", "ante", "porttitor", "sodales", "pellentesque", "augue",
-			"purus" };
+	private String[] items = { "Please set", "path in", "App menu" };
 	private Context ctxt = null;
 
-	public WidgetViewFactory(Context ctxt, Intent intent) {
-		this.ctxt = ctxt;
+	public WidgetViewFactory(Context context, Intent intent) {
+		Database db = new Database(context);
+		String path = db.getString(WidgetProvider.PREFERENCES_NAME);
+
+		if (path != null) {
+			try {
+				Folder folder = new Folder(Environment.getExternalStorageDirectory(), path);
+				items = folder.getFileNames();
+			} catch (Exception e) {
+			}
+		}
+		ctxt = context;
 	}
 
 	@Override
 	public void onCreate() {
-		// no-op
 	}
 
 	@Override
 	public void onDestroy() {
-		// no-op
 	}
 
 	@Override

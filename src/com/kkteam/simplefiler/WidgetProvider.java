@@ -24,6 +24,7 @@ import android.widget.RemoteViews;
 
 public class WidgetProvider extends AppWidgetProvider {
 	public static String EXTRA_WORD = "com.kkteam.simplefiler.WORD";
+	public static String PREFERENCES_NAME = "widget_root";
 
 	@Override
 	public void onUpdate(Context ctxt, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
