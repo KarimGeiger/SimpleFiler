@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
@@ -26,6 +27,7 @@ public class MainActivity extends Activity {
 	private List<FolderListView> listViewArray = new ArrayList<FolderListView>();
 	private File sdCardRoot = Environment.getExternalStorageDirectory();
 	private String currentPath = "/";
+	private List<String> lastPaths = new ArrayList<String>();
 	private Database db;
 
 	@Override
@@ -37,8 +39,12 @@ public class MainActivity extends Activity {
 		Intent intent = getIntent();
 		String path = intent.getStringExtra(WidgetProvider.EXTRA_WORD);
 
+		setContentView(R.layout.activity_main);
+
+		baseLayout = (LinearLayout) findViewById(R.id.llBase);
+
 		if (path != null) {
-			// file pressed on widget
+			// File pressed on widget
 			String file = db.getString(WidgetProvider.PREFERENCES_NAME) + "/" + path;
 			try {
 				// Open file
@@ -46,20 +52,37 @@ public class MainActivity extends Activity {
 				finish();
 			} catch (IsDirectoryException e) {
 				// Open directory
-				Toast.makeText(this, "Opening folders from widget is currently not supported.", Toast.LENGTH_SHORT).show();
+				openFullPath(file);
 			} catch (FileNotFoundException e) {
 				// Invalid file
 				Toast.makeText(this, "File not found.", Toast.LENGTH_SHORT).show();
 				finish();
 			}
+		} else {
+			// Initiate root view
+			onFilePress("/", 0);
+		}
+	}
+
+	/**
+	 * Open full path, not just one level up.
+	 * 
+	 * @param path
+	 *            full path
+	 */
+	private void openFullPath(String path) {
+		currentPath = "";
+		String[] dir = path.split("/");
+
+		if (dir.length == 0) {
+			// Just the root
+			dir = new String[1];
+			dir[0] = "/";
 		}
 
-		setContentView(R.layout.activity_main);
-
-		baseLayout = (LinearLayout) findViewById(R.id.llBase);
-
-		// Initiate root view
-		onFilePress("/", 0);
+		for (int i = 0; i < dir.length; i++) {
+			onFilePressWithoutHistory(currentPath + "/" + dir[i], i);
+		}
 	}
 
 	/**
@@ -86,6 +109,11 @@ public class MainActivity extends Activity {
 	 *            view location in layout
 	 */
 	public void onFilePress(String path, int currentViewLocation) {
+		lastPaths.add(currentPath);
+		onFilePressWithoutHistory(path, currentViewLocation);
+	}
+
+	private void onFilePressWithoutHistory(String path, int currentViewLocation) {
 		try {
 			// It's a directory
 			Folder folder = new Folder(sdCardRoot, path);
@@ -163,6 +191,21 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			if (lastPaths.size() > 1) {
+				// Go back one step in history
+				int index = lastPaths.size() - 1;
+				openFullPath(lastPaths.get(index));
+				lastPaths.remove(index);
+				return true;
+			}
+		}
+
+		return super.onKeyDown(keyCode, event);
 	}
 
 }
