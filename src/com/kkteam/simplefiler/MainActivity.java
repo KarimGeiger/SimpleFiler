@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -187,7 +189,14 @@ public class MainActivity extends Activity {
 		int id = item.getItemId();
 		if (id == R.id.action_widget) {
 			db.setData(WidgetProvider.PREFERENCES_NAME, currentPath);
-			Toast.makeText(this, "Widget path is set.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "Widget path is set. Please readd the widget.", Toast.LENGTH_LONG).show();
+
+			Intent intent = new Intent(this, WidgetProvider.class);
+			intent.setAction("android.appwidget.action.APPWIDGET_UPDATE");
+			int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), WidgetProvider.class));
+			intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, ids);
+			sendBroadcast(intent);
+
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

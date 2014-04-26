@@ -2,6 +2,7 @@ package com.kkteam.simplefiler;
 
 /***
  Copyright (c) 2008-2012 CommonsWare, LLC
+ Copyright (c) 2014 Karim Geiger
  Licensed under the Apache License, Version 2.0 (the "License"); you may not
  use this file except in compliance with the License. You may obtain a copy
  of the License at http://www.apache.org/licenses/LICENSE-2.0. Unless required
@@ -22,7 +23,7 @@ import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 public class WidgetViewFactory implements RemoteViewsService.RemoteViewsFactory {
-	private String[] items = { "Please set", "path in", "App menu" };
+	private String[] items = { "Please set path in", "Application menu", "and readd widget" };
 	private Context ctxt = null;
 
 	public WidgetViewFactory(Context context, Intent intent) {
@@ -49,13 +50,12 @@ public class WidgetViewFactory implements RemoteViewsService.RemoteViewsFactory 
 
 	@Override
 	public int getCount() {
-		return (items.length);
+		return items.length;
 	}
 
 	@Override
 	public RemoteViews getViewAt(int position) {
 		RemoteViews row = new RemoteViews(ctxt.getPackageName(), R.layout.row);
-
 		row.setTextViewText(android.R.id.text1, items[position]);
 
 		Intent i = new Intent();
@@ -65,27 +65,27 @@ public class WidgetViewFactory implements RemoteViewsService.RemoteViewsFactory 
 		i.putExtras(extras);
 		row.setOnClickFillInIntent(android.R.id.text1, i);
 
-		return (row);
+		return row;
 	}
 
 	@Override
 	public RemoteViews getLoadingView() {
-		return (null);
+		return null;
 	}
 
 	@Override
 	public int getViewTypeCount() {
-		return (1);
+		return 1;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		return (position);
+		return position;
 	}
 
 	@Override
 	public boolean hasStableIds() {
-		return (true);
+		return true;
 	}
 
 	@Override
