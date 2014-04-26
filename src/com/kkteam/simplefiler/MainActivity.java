@@ -17,30 +17,6 @@ import android.widget.Toast;
 /**
  * Main activity.
  * 
- * TODO:
- * 
- * Open folders with widget
- * 
- * One folder back at back key press
- * 
- * App Settings
- * 
- * Highlight selected item in list view
- * 
- * Fix width for generated list views
- * 
- * Open last path on orientation change
- * 
- * Copy/Paste/Rename/Create
- * 
- * 
- * KNOWN BUGS:
- * 
- * Widget onClick only works after scrolling once
- * 
- * Widget does not refresh after changing path
- * 
- * 
  * @author Karim Geiger <me@karim-geiger.de>
  * 
  */
@@ -55,9 +31,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
-		baseLayout = (LinearLayout) findViewById(R.id.llBase);
 
 		db = new Database(this.getApplicationContext());
 
@@ -70,11 +43,20 @@ public class MainActivity extends Activity {
 			try {
 				// Open file
 				openFile(file);
-			} catch (Exception e) {
+				finish();
+			} catch (IsDirectoryException e) {
 				// Open directory
 				Toast.makeText(this, "Opening folders from widget is currently not supported.", Toast.LENGTH_SHORT).show();
+			} catch (FileNotFoundException e) {
+				// Invalid file
+				Toast.makeText(this, "File not found.", Toast.LENGTH_SHORT).show();
+				finish();
 			}
 		}
+
+		setContentView(R.layout.activity_main);
+
+		baseLayout = (LinearLayout) findViewById(R.id.llBase);
 
 		// Initiate root view
 		onFilePress("/", 0);
@@ -110,12 +92,13 @@ public class MainActivity extends Activity {
 			removeViews(currentViewLocation - 1);
 			addView(folder, currentViewLocation - 1);
 			currentPath = path;
-		} catch (Exception e) {
+		} catch (NotADirectoryException e) {
 			// It's a file
 			try {
 				openFile(path);
 			} catch (Exception e1) {
-				// This is not going to happen
+				// File does not exist
+				Toast.makeText(this, "This file does not exist.", Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
@@ -125,14 +108,20 @@ public class MainActivity extends Activity {
 	 * 
 	 * @param path
 	 *            path to file
-	 * @throws Exception
-	 *             file is dir
+	 * @throws IsDirectoryException
+	 *             file is directory
+	 * @throws FileNotFoundException
+	 *             file was not found
 	 */
-	private void openFile(String path) throws Exception {
+	private void openFile(String path) throws IsDirectoryException, FileNotFoundException {
 		Intent intent = new Intent(android.content.Intent.ACTION_VIEW);
 		File file = new File(sdCardRoot, path);
+
 		if (file.isDirectory()) {
-			throw new Exception("File is directory.");
+			throw new IsDirectoryException();
+		}
+		if (!file.isFile()) {
+			throw new FileNotFoundException();
 		}
 		try {
 			String extension = android.webkit.MimeTypeMap.getFileExtensionFromUrl(Uri.fromFile(file).toString());

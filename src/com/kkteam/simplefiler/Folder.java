@@ -26,7 +26,7 @@ public class Folder {
 	 * @throws Exception
 	 *             not a folder
 	 */
-	public Folder(File sdCardRoot, String absolutePath) throws Exception {
+	public Folder(File sdCardRoot, String absolutePath) throws NotADirectoryException {
 		this.sdCardRoot = sdCardRoot;
 		this.absolutePath = absolutePath;
 		this.files = getFolderContent();
@@ -39,13 +39,13 @@ public class Folder {
 	 * @throws Exception
 	 *             not a folder
 	 */
-	private File[] getFolderContent() throws Exception {
+	private File[] getFolderContent() throws NotADirectoryException {
 		File dir = new File(sdCardRoot, absolutePath);
 		if (dir.isDirectory()) {
 			return dir.listFiles();
 		}
 
-		throw new Exception("Not a folder");
+		throw new NotADirectoryException();
 	}
 
 	/**
