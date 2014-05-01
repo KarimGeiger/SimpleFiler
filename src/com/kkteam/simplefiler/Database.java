@@ -6,7 +6,7 @@ import android.content.SharedPreferences.Editor;
 
 public class Database {
 	SharedPreferences prefs;
-	private String prefix = "com.kkteam.simplefiler";
+	private final String PREFIX = "com.kkteam.simplefiler";
 
 	/**
 	 * Constructor creates shared preference.
@@ -15,7 +15,7 @@ public class Database {
 	 *            application content.
 	 */
 	public Database(Context context) {
-		prefs = context.getSharedPreferences(this.prefix, Context.MODE_PRIVATE);
+		prefs = context.getSharedPreferences(this.PREFIX, Context.MODE_PRIVATE);
 	}
 
 	/**
@@ -27,7 +27,7 @@ public class Database {
 	 *            the content to save.
 	 */
 	public void setData(String name, String content) {
-		prefs.edit().putString(this.prefix + "." + name, content).commit();
+		prefs.edit().putString(this.PREFIX + "." + name, content).commit();
 	}
 
 	/**
@@ -39,7 +39,7 @@ public class Database {
 	 *            the content to save.
 	 */
 	public void setData(String name, int content) {
-		prefs.edit().putInt(this.prefix + "." + name, content).commit();
+		prefs.edit().putInt(this.PREFIX + "." + name, content).commit();
 	}
 
 	/**
@@ -51,7 +51,7 @@ public class Database {
 	 *            the content to save.
 	 */
 	public void setData(String name, float content) {
-		prefs.edit().putFloat(this.prefix + "." + name, (float) content).commit();
+		prefs.edit().putFloat(this.PREFIX + "." + name, (float) content).commit();
 	}
 
 	/**
@@ -63,7 +63,7 @@ public class Database {
 	 *            the content to save.
 	 */
 	public void setData(String name, long content) {
-		prefs.edit().putLong(this.prefix + "." + name, content).commit();
+		prefs.edit().putLong(this.PREFIX + "." + name, content).commit();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public class Database {
 	 * @return saved data.
 	 */
 	public String getString(String name) {
-		return prefs.getString(this.prefix + "." + name, null);
+		return prefs.getString(this.PREFIX + "." + name, null);
 	}
 
 	/**
@@ -85,7 +85,7 @@ public class Database {
 	 * @return saved data.
 	 */
 	public int getInteger(String name) {
-		return prefs.getInt(this.prefix + "." + name, 0);
+		return prefs.getInt(this.PREFIX + "." + name, 0);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public class Database {
 	 * @return saved data.
 	 */
 	public long getLong(String name) {
-		return prefs.getLong(this.prefix + "." + name, 0);
+		return prefs.getLong(this.PREFIX + "." + name, 0);
 	}
 
 	/**
@@ -107,7 +107,7 @@ public class Database {
 	 * @return saved data.
 	 */
 	public double getDouble(String name) {
-		return prefs.getFloat(this.prefix + "." + name, 0);
+		return prefs.getFloat(this.PREFIX + "." + name, 0);
 	}
 
 	public void scrubData() {
